@@ -1,6 +1,9 @@
 #include "tunnel.h"
+#include "syslog.cpp"
 
 void data_from_local_or_fec_timeout(conn_info_t &conn_info, int is_time_out) {
+    SyslogLogger logger;
+
     fd64_t &remote_fd64 = conn_info.remote_fd64;
     int &local_listen_fd = conn_info.local_listen_fd;
 
@@ -72,6 +75,7 @@ void data_from_local_or_fec_timeout(conn_info_t &conn_info, int is_time_out) {
             }
             conv = conn_info.conv_manager.c.get_new_conv();
             conn_info.conv_manager.c.insert_conv(conv, addr);
+            logger.log("new packet from %s,conv_id=%x", addr.get_str(), conv);
             mylog(log_info, "new packet from %s,conv_id=%x\n", addr.get_str(), conv);
         } else {
             conv = conn_info.conv_manager.c.find_conv_by_data(addr);
